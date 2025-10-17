@@ -132,6 +132,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // Setup property panel listeners
     setupPropertyListeners();
 
+    // Disable copy for code editors
+    codeFull.addEventListener('copy', (e) => e.preventDefault());
+    codeSplit.addEventListener('copy', (e) => e.preventDefault());
+
     // --- RIBBON BUTTON LISTENERS ---
     setupRibbonListeners();
 
@@ -649,6 +653,47 @@ async function saveHtmlToFile() {
 
     // Get the modified HTML from the body of the parsed document
     htmlContent = doc.body.innerHTML;
+
+    // Append the banner to the saved HTML content
+    const bannerHtml = `
+        <div style="
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: #f0f0f0;
+            border-top: 1px solid #ccc;
+            padding: 10px;
+            text-align: center;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            font-size: 12px;
+            color: #333;
+            z-index: 9999;
+        ">
+            This page was created with XPress Page. <a href="https://dreeam00.github.io/XPressPage" target="_blank" style="color: #0078D7; text-decoration: none;">Learn more</a>
+        </div>
+    `;
+    htmlContent += bannerHtml;
+
+    // Append the bottom-left banner to the saved HTML content
+    const bottomLeftBannerHtml = `
+        <a href="https://dreeam00.github.io/XPressPage" target="_blank" style="
+            position: fixed;
+            bottom: 10px;
+            left: 10px;
+            z-index: 9999;
+            display: block;
+        ">
+            <img src="https://dreeam00.github.io/XPressPage/banner.png" alt="XPress Page Banner" style="
+                width: 100px;
+                height: auto;
+                border: none;
+                box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+                border-radius: 5px;
+            ">
+        </a>
+    `;
+    htmlContent += bottomLeftBannerHtml;
 
     const blob = new Blob([htmlContent], { type: 'text/html' });
     const a = document.createElement('a');
