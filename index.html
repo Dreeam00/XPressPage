@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XPress Page</title>
+    <link rel="icon" href="icon.png" type="image/png">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div id="app-header">
+        <img src="icon.png" alt="XPress Page Logo" style="height: 24px; margin-right: 10px;">
+        <button id="save-html" class="app-header-button">Save</button>
+    </div>
+    <div id="ribbon-container">
+        <div id="ribbon-tabs">
+            <div class="ribbon-tab active" onclick="switchRibbonTab('home')">Home</div>
+            <div class="ribbon-tab" onclick="switchRibbonTab('insert')">Insert</div>
+            <div class="ribbon-tab" onclick="switchRibbonTab('view')">View</div>
+        </div>
+        <div id="ribbon-panes">
+            <div class="ribbon-pane active" id="ribbon-home">
+                <div class="ribbon-group">
+                    <span class="group-title">Clipboard</span>
+                    <button>Paste</button>
+                    <button>Cut</button>
+                    <button>Copy</button>
+                </div>
+                <div class="ribbon-group">
+                    <span class="group-title">Font</span>
+                    <button id="toggle-bold"><b>B</b></button>
+                    <button id="toggle-italic"><i>I</i></button>
+                    <button id="toggle-underline"><u>U</u></button>
+                </div>
+                <div class="ribbon-group">
+                    <span class="group-title">Editing</span>
+                    <button id="delete-element">Delete</button>
+                </div>
+            </div>
+            <div class="ribbon-pane" id="ribbon-insert">
+                <div class="ribbon-group">
+                    <span class="group-title">Containers</span>
+                    <button id="insert-div">Div</button>
+                    <button id="insert-span">Span</button>
+                    <button id="insert-header">Header</button>
+                    <button id="insert-hr">HR</button>
+                </div>
+                <div class="ribbon-group">
+                    <span class="group-title">Text</span>
+                    <button id="insert-p">Paragraph</button>
+                    <button id="insert-h1">H1</button>
+                    <button id="insert-h2">H2</button>
+                    <button id="insert-h3">H3</button>
+                </div>
+                <div class="ribbon-group">
+                    <span class="group-title">Media</span>
+                    <button id="insert-img">Image</button>
+                </div>
+                <div class="ribbon-group">
+                    <span class="group-title">Lists</span>
+                    <button id="insert-ul">UL</button>
+                    <button id="insert-ol">OL</button>
+                    <button id="insert-li">LI</button>
+                </div>
+            </div>
+            <div class="ribbon-pane" id="ribbon-view">
+                 <div class="ribbon-group">
+                    <span class="group-title">Panes</span>
+                    <button>Toggle Left</button>
+                    <button>Toggle Right</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="main-container">
+        <div id="left-pane">
+            <div class="pane-header">Component Tree</div>
+            <ul id="component-tree"></ul>
+        </div>
+        <div id="center-pane">
+            <div id="editor-tabs">
+                <div class="tab active" onclick="switchView('design')">Design</div>
+                <div class="tab" onclick="switchView('split')">Split</div>
+                <div class="tab" onclick="switchView('code')">Code</div>
+            </div>
+            <div id="editor-area">
+                <div id="design-view" class="view active"><iframe id="wysiwyg-editor"></iframe></div>
+                <div id="split-view" class="view">
+                    <div id="split-design-pane"><iframe id="wysiwyg-editor-split"></iframe></div>
+                    <div id="split-code-pane"><textarea id="code-editor-split"></textarea></div>
+                </div>
+                <div id="code-view" class="view"><textarea id="code-editor-full"></textarea></div>
+            </div>
+        </div>
+        <div id="right-pane">
+            <div class="pane-header">Properties</div>
+            <div id="properties-panel"></div>
+        </div>
+    </div>
+    <script src="js/main.js"></script>
+</body>
+</html>

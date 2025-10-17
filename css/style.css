@@ -1,0 +1,237 @@
+/* General Body & Layout */
+body {
+    font-family: 'Segoe UI', Calibri, Arial, sans-serif;
+    font-size: 12px;
+    margin: 0;
+    background-color: #D9E5F3; /* Office 2007-ish background */
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+/* Application Header */
+#app-header {
+    background: linear-gradient(to bottom, #EAF2FB, #D9E5F3);
+    border-bottom: 1px solid #95B3D8;
+    padding: 3px 5px;
+    display: flex;
+    flex-shrink: 0;
+}
+
+
+
+.app-header-button {
+    background: linear-gradient(to bottom, #EAF2FB, #D9E5F3);
+    border: 1px solid #95B3D8;
+    padding: 3px 8px;
+    margin-left: 10px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 12px;
+    color: #1E4E8A;
+}
+
+.app-header-button:hover {
+    background: linear-gradient(to bottom, #FFF3A5, #FEE481);
+    border-color: #FBCB89;
+}
+
+#main-container {
+    display: flex;
+    flex-grow: 1;
+    overflow: hidden;
+    padding: 0 5px 5px 5px;
+}
+
+/* Ribbon UI */
+#ribbon-container {
+    background: linear-gradient(to bottom, #EAF2FB, #D9E5F3 60%, #C2D9F2);
+    border-bottom: 1px solid #95B3D8;
+    flex-shrink: 0;
+    padding: 0 5px;
+}
+
+#ribbon-tabs {
+    display: flex;
+    height: 28px;
+}
+
+.ribbon-tab {
+    padding: 8px 15px 6px 15px;
+    cursor: pointer;
+    border: 1px solid transparent;
+    border-bottom: none;
+}
+
+.ribbon-tab.active {
+    background: #FFFFFF;
+    border-color: #95B3D8;
+    border-bottom: 1px solid #FFF;
+    border-radius: 3px 3px 0 0;
+    position: relative;
+    margin-bottom: -1px;
+}
+
+#ribbon-panes {
+    background: #FFFFFF;
+    border: 1px solid #95B3D8;
+    padding: 5px;
+    display: flex;
+}
+
+.ribbon-pane {
+    display: none;
+    width: 100%;
+}
+
+.ribbon-pane.active {
+    display: flex;
+}
+
+.ribbon-group {
+    border-right: 1px solid #D9E5F3;
+    padding: 0 15px;
+    margin-right: 5px;
+    text-align: center;
+}
+
+.ribbon-group .group-title {
+    display: block;
+    text-align: center;
+    margin-top: 5px;
+    color: #666;
+}
+
+.ribbon-group button {
+    background: transparent;
+    border: 1px solid transparent;
+    padding: 5px;
+    margin: 2px;
+}
+
+.ribbon-group button:hover {
+    border: 1px solid #FBCB89;
+    background: linear-gradient(to bottom, #FFF3A5, #FEE481);
+}
+
+/* Panes (Left, Center, Right) */
+#left-pane, #center-pane, #right-pane {
+    background-color: #FFF;
+    border: 1px solid #95B3D8;
+    display: flex;
+    flex-direction: column;
+    margin: 0 2px;
+}
+
+#left-pane { width: 220px; }
+#center-pane { flex-grow: 1; }
+#right-pane { width: 250px; }
+
+.pane-header {
+    background: linear-gradient(to bottom, #FFFFFF, #E3EFFF);
+    color: #1E4E8A;
+    padding: 6px 8px;
+    font-weight: bold;
+    border-bottom: 1px solid #95B3D8;
+    flex-shrink: 0;
+}
+
+/* Editor Tabs */
+#editor-tabs {
+    display: flex;
+    background-color: #F2F2F2;
+    border-bottom: 1px solid #95B3D8;
+    flex-shrink: 0;
+}
+
+.tab {
+    padding: 7px 15px;
+    cursor: pointer;
+    border-right: 1px solid #C5C5C5;
+}
+
+.tab.active {
+    background-color: #FFF;
+    border-bottom: 1px solid #FFF;
+    position: relative;
+    top: 1px;
+}
+
+/* Editor Area */
+#editor-area { flex-grow: 1; position: relative; }
+.view { display: none; height: 100%; width: 100%; position: absolute; }
+.view.active { display: block; }
+
+#wysiwyg-editor, #wysiwyg-editor-split { width: 100%; height: 100%; border: none; }
+#code-editor-full, #code-editor-split { width: 100%; height: 100%; box-sizing: border-box; font-family: Consolas, monospace; resize: none; border: none; }
+
+#split-view { display: none; flex-direction: column; height: 100%; }
+.view.active#split-view { display: flex; }
+#split-design-pane, #split-code-pane { height: 50%; overflow: auto; border-bottom: 1px solid #95B3D8; box-sizing: border-box; }
+#split-code-pane { border-bottom: none; }
+
+/* Component & Properties Panes */
+#component-tree ul {
+    padding-left: 15px;
+    list-style-type: none;
+}
+
+#component-tree .toggle {
+    cursor: pointer;
+    font-family: monospace;
+    font-weight: bold;
+    display: inline-block;
+    width: 12px;
+}
+
+#component-tree .tree-item-title {
+    cursor: pointer;
+    padding: 2px 4px;
+    border-radius: 2px;
+}
+
+#component-tree .tree-item-title:hover {
+    background-color: #E3EFFF;
+}
+
+#component-tree .selected {
+    background-color: #C2D9F2;
+    border: 1px dotted #1E4E8A;
+}
+
+#component-tree .dragging {
+    opacity: 0.5;
+}
+
+/* Component Tree Drag & Drop Visual Cues */
+#component-tree .drag-over-before {
+    border-top: 2px solid #0078D7;
+}
+
+#component-tree .drag-over-after {
+    border-bottom: 2px solid #0078D7;
+}
+
+#component-tree .drag-over-into {
+    outline: 2px solid #0078D7;
+    outline-offset: -2px;
+}
+
+#properties-panel { padding: 10px; overflow-y: auto; }
+.prop-header {
+    font-weight: bold;
+    border-bottom: 1px solid #D6D3C6;
+    margin-bottom: 8px;
+    padding-bottom: 3px;
+}
+.prop-item { margin-bottom: 8px; }
+.prop-item label { display: block; margin-bottom: 3px; }
+.prop-item input, .prop-item select { width: calc(100% - 10px); border: 1px solid #ABC7EC; padding: 3px; }
+#app-title {
+    font-size: 31px;
+    font-weight: bold;
+    color: #1E4E8A;
+    flex-grow: 1;
+    align-self: center;
+}
