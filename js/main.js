@@ -695,7 +695,19 @@ async function saveHtmlToFile() {
     `;
     htmlContent += bottomLeftBannerHtml;
 
-    const blob = new Blob([htmlContent], { type: 'text/html' });
+    // Prepend the meta charset tag and wrap the content in a full HTML structure
+    const finalHtml = `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>XPress Page Export</title>
+</head>
+<body>
+${htmlContent}
+</body>
+</html>`;
+
+    const blob = new Blob([finalHtml], { type: 'text/html' });
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
     a.download = 'index.html'; // Default filename
