@@ -685,7 +685,7 @@ async function saveHtmlToFile() {
             display: block;
         ">
             <img src="https://dreeam00.github.io/XPressPage/banner.png" alt="XPress Page Banner" style="
-                width: 100px;
+                width: 300px;
                 height: auto;
                 border: none;
                 box-shadow: 0 2px 5px rgba(0,0,0,0.2);
