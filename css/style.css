@@ -602,3 +602,28 @@ body {
     margin-left: 10px;
     color: #555;
 }
+
+/* Status Bar */
+#status-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 22px;
+    background: linear-gradient(to bottom, #EAF2FB, #D9E5F3);
+    border-top: 1px solid #95B3D8;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 10px;
+    font-size: 11px;
+    color: #1E4E8A;
+    z-index: 5000; /* Ensure it's above content but below dialogs */
+    box-sizing: border-box;
+}
+
+#status-panel-main, #status-panel-right {
+    padding: 0 8px;
+    border-left: 1px solid #C5D9F1;
+    border-right: 1px solid #C5D9F1;
+}

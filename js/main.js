@@ -639,6 +639,15 @@ function switchView(viewName) {
     document.querySelectorAll('.view, .tab').forEach(el => el.classList.remove('active'));
     document.getElementById(viewName + '-view').classList.add('active');
     document.querySelector(`.tab[onclick="switchView('${viewName}')"]`).classList.add('active');
+
+    // Update status bar
+    const viewText = {
+        design: 'Design View',
+        split: 'Split View',
+        code: 'Code View'
+    }[viewName];
+    document.getElementById('status-panel-right').textContent = viewText;
+
     syncViews();
 }
 
@@ -683,6 +692,7 @@ function selectElement(element, sourceIframe) {
     if (selectedElement) {
         selectedElement.style.outline = '';
     }
+    const statusPanel = document.getElementById('status-panel-main');
     if (element && element.tagName !== 'BODY') {
         selectedElement = element;
         selectedElement.style.outline = '2px dashed #00A8F7';
@@ -691,6 +701,15 @@ function selectElement(element, sourceIframe) {
             selectedElement = findElementByPath(wysiwyg.contentDocument.body, path);
             if(selectedElement) selectedElement.style.outline = '2px dashed #00A8F7';
         }
+        // Update status bar
+        let statusText = `<${element.tagName.toLowerCase()}>`;
+        if (element.id) statusText += `#${element.id}`;
+        if (element.className) statusText += `.${element.className.split(' ').join('.')}`;
+        statusPanel.textContent = statusText;
+
+    } else {
+        selectedElement = null;
+        statusPanel.textContent = '準備完了'; // Reset status text
     }
     updatePropertiesPanel();
     highlightComponentInTree();
