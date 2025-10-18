@@ -40,7 +40,6 @@ const generalHints = [
     "要素を移動するには、「Component Tree」で要素を選択し、上下の矢印ボタンを使用してください。",
     "不要な要素は、「Home」タブの「Delete」ボタンで削除できます。",
     "リンクや画像などの属性を持つ要素を挿入する際は、表示されるダイアログで詳細を設定できます。",
-    "WYSIWYGエディタで直接テキストを編集することも可能です。",
     "分割ビューでは、デザインとコードを同時に確認しながら作業できます。"
 ];
 
@@ -511,24 +510,13 @@ function setupRibbonListeners() {
         const doc = activeWysiwyg.contentDocument;
         activeWysiwyg.focus();
 
-        const selection = doc.getSelection();
-        if (!selection.rangeCount) return;
-
-        const range = selection.getRangeAt(0);
-        range.deleteContents();
-
         const newEl = doc.createElement(tagName);
         if (textContent) newEl.textContent = textContent;
         Object.entries(attributes).forEach(([key, value]) => newEl.setAttribute(key, value));
 
-        if (selectedElement) {
-            range.insertNode(newEl);
-            range.setStartAfter(newEl);
-            selection.removeAllRanges();
-            selection.addRange(range);
-        } else {
-            doc.body.appendChild(newEl);
-        }
+        // Always append to the body, not into a selected element
+        doc.body.appendChild(newEl);
+
         syncViews();
     };
 
@@ -718,6 +706,8 @@ function updatePropertiesPanel() {
         { label: 'ボーダー色', prop: 'borderColor', type: 'color', value: computedStyle.borderColor },
         { label: 'ボーダー半径', prop: 'borderRadius', type: 'text', value: computedStyle.borderRadius },
         { type: 'group', label: 'レイアウト' },
+        { label: '幅', prop: 'width', type: 'text', value: computedStyle.width },
+        { label: '高さ', prop: 'height', type: 'text', value: computedStyle.height },
         { label: 'マージン', prop: 'margin', type: 'text', value: computedStyle.margin },
         { label: 'パディング', prop: 'padding', type: 'text', value: computedStyle.padding },
         { type: 'group', label: 'Flexbox (コンテナ)' },
