@@ -111,6 +111,16 @@ body {
     border: 1px solid transparent;
     padding: 5px;
     margin: 2px;
+    display: inline-flex; /* Use flexbox for alignment */
+    align-items: center;
+    justify-content: center;
+    min-width: 32px; /* Ensure a minimum width */
+    min-height: 32px; /* Ensure a minimum height */
+}
+
+.ribbon-group button img {
+    width: 16px;
+    height: 16px;
 }
 
 .ribbon-group button:hover {

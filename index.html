@@ -39,15 +39,15 @@
             <div class="ribbon-pane active" id="ribbon-home">
                 <div class="ribbon-group">
                     <span class="group-title">Clipboard</span>
-                    <button>Paste</button>
-                    <button>Cut</button>
-                    <button>Copy</button>
+                    <button><img src="icons/ribon/icon_paste.png" alt="Paste"></button>
+                    <button><img src="icons/ribon/icon_cut.png" alt="Cut"></button>
+                    <button><img src="icons/ribon/icon_copy.png" alt="Copy"></button>
                 </div>
                 <div class="ribbon-group">
                     <span class="group-title">Font</span>
-                    <button id="toggle-bold"><b>B</b></button>
-                    <button id="toggle-italic"><i>I</i></button>
-                    <button id="toggle-underline"><u>U</u></button>
+                    <button id="toggle-bold"><img src="icons/ribon/icon_bold.png" alt="Bold"></button>
+                    <button id="toggle-italic"><img src="icons/ribon/icon_italic.png" alt="Italic"></button>
+                    <button id="toggle-underline"><img src="icons/ribon/icon_underline.png" alt="Underline"></button>
                 </div>
                 <div class="ribbon-group">
                     <span class="group-title">Editing</span>
@@ -65,15 +65,15 @@
                 </div>
                 <div class="ribbon-group">
                     <span class="group-title">Text</span>
-                    <button id="insert-p">Paragraph</button>
-                    <button id="insert-h1">H1</button>
+                    <button id="insert-p"><img src="icons/ribon/icon_p.png" alt="Paragraph"></button>
+                    <button id="insert-h1"><img src="icons/ribon/icon_h1.png" alt="H1"></button>
                     <button id="insert-h2">H2</button>
                     <button id="insert-h3">H3</button>
-                    <button id="insert-a">Link</button>
+                    <button id="insert-a"><img src="icons/ribon/icon_link.png" alt="Link"></button>
                 </div>
                 <div class="ribbon-group">
                     <span class="group-title">Media</span>
-                    <button id="insert-img">Image</button>
+                    <button id="insert-img"><img src="icons/ribon/icon_img.png" alt="Image"></button>
                 </div>
                 <div class="ribbon-group">
                     <span class="group-title">Lists</span>
@@ -83,13 +83,13 @@
                 </div>
                 <div class="ribbon-group">
                     <span class="group-title">Input</span>
-                    <button id="insert-input">Input</button>
+                    <button id="insert-input"><img src="icons/ribon/icon_input.png" alt="Input"></button>
                     <button id="insert-textarea">Textarea</button>
                     <button id="insert-select">Select</button>
                 </div>
                 <div class="ribbon-group">
                     <span class="group-title">Table</span>
-                    <button id="insert-table">Table</button>
+                    <button id="insert-table"><img src="icons/ribon/icon_table.png" alt="Table"></button>
                     <button id="insert-tr">TR</button>
                     <button id="insert-td">TD</button>
                     <button id="insert-th">TH</button>
@@ -172,7 +172,7 @@
     <!-- Custom Attribute Dialog -->
     <div id="attribute-dialog-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 1001;">
         <div id="attribute-dialog" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #EAF2FB; border: 1px solid #95B3D8; border-radius: 5px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); padding: 20px; width: 350px; font-family: 'Segoe UI', Calibri, Arial, sans-serif; font-size: 12px;">
-            <h3 id="attribute-dialog-title" style="margin-top: 0; color: #1E4E8A;"><img id="attribute-icon" class="custom-dialog-icon" src="input.png">Configure Element Attributes</h3>
+            <h3 id="attribute-dialog-title" style="margin-top: 0; color: #1E4E8A;"><img id="attribute-icon" class="custom-dialog-icon" src="icons/dialog/prompt.png">Configure Element Attributes</h3>
             <div id="attribute-fields">
                 <!-- Attribute fields will be dynamically inserted here -->
             </div>
@@ -186,7 +186,7 @@
     <!-- Custom Alert Dialog -->
     <div id="alert-dialog-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 1002;">
         <div id="alert-dialog" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #EAF2FB; border: 1px solid #95B3D8; border-radius: 5px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); padding: 20px; width: 300px; font-family: 'Segoe UI', Calibri, Arial, sans-serif; font-size: 12px;">
-            <h3 style="margin-top: 0; color: #1E4E8A;"><img id="alert-icon" class="custom-dialog-icon" src="err.png">Alert</h3>
+            <h3 style="margin-top: 0; color: #1E4E8A;"><img id="alert-icon" class="custom-dialog-icon" src="icons/dialog/error.png">Alert</h3>
             <p id="alert-message" style="margin-bottom: 15px; color: #333;"></p>
             <div style="text-align: right;">
                 <button id="alert-ok-btn" style="background: linear-gradient(to bottom, #EAF2FB, #D9E5F3); border: 1px solid #95B3D8; padding: 5px 10px; border-radius: 3px; cursor: pointer; font-size: 12px; color: #1E4E8A; margin-left: 10px;">OK</button>
@@ -197,7 +197,7 @@
     <!-- Custom Prompt Dialog -->
     <div id="prompt-dialog-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 1003;">
         <div id="prompt-dialog" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #EAF2FB; border: 1px solid #95B3D8; border-radius: 5px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); padding: 20px; width: 300px; font-family: 'Segoe UI', Calibri, Arial, sans-serif; font-size: 12px;">
-            <h3 style="margin-top: 0; color: #1E4E8A;"><img id="prompt-icon" class="custom-dialog-icon" src="input.png">Input Required</h3>
+            <h3 style="margin-top: 0; color: #1E4E8A;"><img id="prompt-icon" class="custom-dialog-icon" src="icons/dialog/prompt.png">Input Required</h3>
             <p id="prompt-message" style="margin-bottom: 10px; color: #333;"></p>
             <input type="text" id="prompt-input" style="width: calc(100% - 10px); padding: 5px; border: 1px solid #ABC7EC; border-radius: 3px; background-color: #FFF; margin-bottom: 15px;">
             <div style="text-align: right;">
@@ -210,7 +210,7 @@
     <!-- Custom Confirm Dialog -->
     <div id="confirm-dialog-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 1004;">
         <div id="confirm-dialog" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #EAF2FB; border: 1px solid #95B3D8; border-radius: 5px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); padding: 20px; width: 300px; font-family: 'Segoe UI', Calibri, Arial, sans-serif; font-size: 12px;">
-            <h3 style="margin-top: 0; color: #1E4E8A;"><img id="confirm-icon" class="custom-dialog-icon" src="warn.png">Confirm</h3>
+            <h3 style="margin-top: 0; color: #1E4E8A;"><img id="confirm-icon" class="custom-dialog-icon" src="icons/dialog/warning.png">Confirm</h3>
             <p id="confirm-message" style="margin-bottom: 15px; color: #333;"></p>
             <div style="text-align: right;">
                 <button id="confirm-ok-btn" style="background: linear-gradient(to bottom, #EAF2FB, #D9E5F3); border: 1px solid #95B3D8; padding: 5px 10px; border-radius: 3px; cursor: pointer; font-size: 12px; color: #1E4E8A; margin-left: 10px;">OK</button>
