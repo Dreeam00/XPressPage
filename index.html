@@ -9,8 +9,8 @@
 </head>
 <body>
     <div id="app-header">
-        <img src="icon.png" alt="XPress Page Logo" style="height: 24px; margin-right: 10px;">
-        <button id="save-html" class="app-header-button">Save</button>
+        <img src="icon.png" alt="XPress Page Logo" style="height: 24px; margin-right: 10px;"><div style="font-size: 18px; color: #1E4E8A; font-weight: bold;">XPress Page</div>
+        <button id="save-html" class="app-header-button"><img src="save.png" alt="Save" width="16"></button>
     </div>
     <div id="ribbon-container">
         <div id="ribbon-tabs">
@@ -34,6 +34,7 @@
                 </div>
                 <div class="ribbon-group">
                     <span class="group-title">Editing</span>
+                    <button id="insert-into">Insert Into</button>
                     <button id="delete-element">Delete</button>
                 </div>
             </div>
@@ -51,6 +52,7 @@
                     <button id="insert-h1">H1</button>
                     <button id="insert-h2">H2</button>
                     <button id="insert-h3">H3</button>
+                    <button id="insert-a">Link</button>
                 </div>
                 <div class="ribbon-group">
                     <span class="group-title">Media</span>
@@ -61,6 +63,19 @@
                     <button id="insert-ul">UL</button>
                     <button id="insert-ol">OL</button>
                     <button id="insert-li">LI</button>
+                </div>
+                <div class="ribbon-group">
+                    <span class="group-title">Input</span>
+                    <button id="insert-input">Input</button>
+                    <button id="insert-textarea">Textarea</button>
+                    <button id="insert-select">Select</button>
+                </div>
+                <div class="ribbon-group">
+                    <span class="group-title">Table</span>
+                    <button id="insert-table">Table</button>
+                    <button id="insert-tr">TR</button>
+                    <button id="insert-td">TD</button>
+                    <button id="insert-th">TH</button>
                 </div>
             </div>
             <div class="ribbon-pane" id="ribbon-view">
@@ -75,7 +90,11 @@
 
     <div id="main-container">
         <div id="left-pane">
-            <div class="pane-header">Component Tree</div>
+            <div class="pane-header">
+                Component Tree
+                <button id="move-up" class="app-header-button" style="float: right; margin-left: 5px;">▲</button>
+                <button id="move-down" class="app-header-button" style="float: right;">▼</button>
+            </div>
             <ul id="component-tree"></ul>
         </div>
         <div id="center-pane">
@@ -99,5 +118,88 @@
         </div>
     </div>
     <script src="js/main.js"></script>
+
+    <!-- Custom Element Insertion Dialog -->
+    <div id="insert-dialog-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 1000;">
+        <div id="insert-dialog" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #EAF2FB; border: 1px solid #95B3D8; border-radius: 5px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); padding: 20px; width: 300px; font-family: 'Segoe UI', Calibri, Arial, sans-serif; font-size: 12px;">
+            <h3 style="margin-top: 0; color: #1E4E8A;">Insert Element</h3>
+            <div style="margin-bottom: 15px;">
+                <label for="dialog-element-type" style="display: block; margin-bottom: 5px; color: #333;">Select element type:</label>
+                <select id="dialog-element-type" style="width: 100%; padding: 5px; border: 1px solid #ABC7EC; border-radius: 3px;">
+                    <option value="div">Div</option>
+                    <option value="p">Paragraph</option>
+                    <option value="h1">Heading 1</option>
+                    <option value="h2">Heading 2</option>
+                    <option value="h3">Heading 3</option>
+                    <option value="span">Span</option>
+                    <option value="img">Image</option>
+                    <option value="ul">Unordered List</option>
+                    <option value="ol">Ordered List</option>
+                    <option value="li">List Item</option>
+                    <option value="a">Link</option>
+                    <option value="input">Input</option>
+                    <option value="textarea">Textarea</option>
+                    <option value="table">Table</option>
+                    <option value="tr">Table Row</option>
+                    <option value="td">Table Data</option>
+                    <option value="th">Table Header</option>
+                </select>
+            </div>
+            <div style="text-align: right;">
+                <button id="dialog-insert-btn" style="background: linear-gradient(to bottom, #EAF2FB, #D9E5F3); border: 1px solid #95B3D8; padding: 5px 10px; border-radius: 3px; cursor: pointer; font-size: 12px; color: #1E4E8A; margin-left: 10px;">Insert</button>
+                <button id="dialog-cancel-btn" style="background: linear-gradient(to bottom, #EAF2FB, #D9E5F3); border: 1px solid #95B3D8; padding: 5px 10px; border-radius: 3px; cursor: pointer; font-size: 12px; color: #1E4E8A; margin-left: 10px;">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Attribute Dialog -->
+    <div id="attribute-dialog-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 1001;">
+        <div id="attribute-dialog" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #EAF2FB; border: 1px solid #95B3D8; border-radius: 5px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); padding: 20px; width: 350px; font-family: 'Segoe UI', Calibri, Arial, sans-serif; font-size: 12px;">
+            <h3 id="attribute-dialog-title" style="margin-top: 0; color: #1E4E8A;"><img id="attribute-icon" class="custom-dialog-icon" src="input.png">Configure Element Attributes</h3>
+            <div id="attribute-fields">
+                <!-- Attribute fields will be dynamically inserted here -->
+            </div>
+            <div style="text-align: right; margin-top: 15px;">
+                <button id="attribute-insert-btn" style="background: linear-gradient(to bottom, #EAF2FB, #D9E5F3); border: 1px solid #95B3D8; padding: 5px 10px; border-radius: 3px; cursor: pointer; font-size: 12px; color: #1E4E8A; margin-left: 10px;">Insert</button>
+                <button id="attribute-cancel-btn" style="background: linear-gradient(to bottom, #EAF2FB, #D9E5F3); border: 1px solid #95B3D8; padding: 5px 10px; border-radius: 3px; cursor: pointer; font-size: 12px; color: #1E4E8A; margin-left: 10px;">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Alert Dialog -->
+    <div id="alert-dialog-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 1002;">
+        <div id="alert-dialog" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #EAF2FB; border: 1px solid #95B3D8; border-radius: 5px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); padding: 20px; width: 300px; font-family: 'Segoe UI', Calibri, Arial, sans-serif; font-size: 12px;">
+            <h3 style="margin-top: 0; color: #1E4E8A;"><img id="alert-icon" class="custom-dialog-icon" src="err.png">Alert</h3>
+            <p id="alert-message" style="margin-bottom: 15px; color: #333;"></p>
+            <div style="text-align: right;">
+                <button id="alert-ok-btn" style="background: linear-gradient(to bottom, #EAF2FB, #D9E5F3); border: 1px solid #95B3D8; padding: 5px 10px; border-radius: 3px; cursor: pointer; font-size: 12px; color: #1E4E8A; margin-left: 10px;">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Prompt Dialog -->
+    <div id="prompt-dialog-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 1003;">
+        <div id="prompt-dialog" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #EAF2FB; border: 1px solid #95B3D8; border-radius: 5px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); padding: 20px; width: 300px; font-family: 'Segoe UI', Calibri, Arial, sans-serif; font-size: 12px;">
+            <h3 style="margin-top: 0; color: #1E4E8A;"><img id="prompt-icon" class="custom-dialog-icon" src="input.png">Input Required</h3>
+            <p id="prompt-message" style="margin-bottom: 10px; color: #333;"></p>
+            <input type="text" id="prompt-input" style="width: calc(100% - 10px); padding: 5px; border: 1px solid #ABC7EC; border-radius: 3px; background-color: #FFF; margin-bottom: 15px;">
+            <div style="text-align: right;">
+                <button id="prompt-ok-btn" style="background: linear-gradient(to bottom, #EAF2FB, #D9E5F3); border: 1px solid #95B3D8; padding: 5px 10px; border-radius: 3px; cursor: pointer; font-size: 12px; color: #1E4E8A; margin-left: 10px;">OK</button>
+                <button id="prompt-cancel-btn" style="background: linear-gradient(to bottom, #EAF2FB, #D9E5F3); border: 1px solid #95B3D8; padding: 5px 10px; border-radius: 3px; cursor: pointer; font-size: 12px; color: #1E4E8A; margin-left: 10px;">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Confirm Dialog -->
+    <div id="confirm-dialog-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 1004;">
+        <div id="confirm-dialog" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #EAF2FB; border: 1px solid #95B3D8; border-radius: 5px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); padding: 20px; width: 300px; font-family: 'Segoe UI', Calibri, Arial, sans-serif; font-size: 12px;">
+            <h3 style="margin-top: 0; color: #1E4E8A;"><img id="confirm-icon" class="custom-dialog-icon" src="warn.png">Confirm</h3>
+            <p id="confirm-message" style="margin-bottom: 15px; color: #333;"></p>
+            <div style="text-align: right;">
+                <button id="confirm-ok-btn" style="background: linear-gradient(to bottom, #EAF2FB, #D9E5F3); border: 1px solid #95B3D8; padding: 5px 10px; border-radius: 3px; cursor: pointer; font-size: 12px; color: #1E4E8A; margin-left: 10px;">OK</button>
+                <button id="confirm-cancel-btn" style="background: linear-gradient(to bottom, #EAF2FB, #D9E5F3); border: 1px solid #95B3D8; padding: 5px 10px; border-radius: 3px; cursor: pointer; font-size: 12px; color: #1E4E8A; margin-left: 10px;">Cancel</button>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

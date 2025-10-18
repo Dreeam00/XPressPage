@@ -1,6 +1,18 @@
 let selectedElement = null;
 let wysiwyg, wysiwygSplit, codeFull, codeSplit;
 
+// Global references for dialog elements
+let insertDialogOverlay, dialogElementType, dialogInsertBtn, dialogCancelBtn;
+let attributeDialogOverlay, attributeDialogTitle, attributeFields, attributeInsertBtn, attributeCancelBtn;
+let attributeIcon;
+let alertDialogOverlay, alertMessage, alertOkBtn;
+let promptDialogOverlay, promptMessage, promptInput, promptOkBtn, promptCancelBtn;
+let confirmDialogOverlay, confirmMessage, confirmOkBtn, confirmCancelBtn;
+
+let alertIcon, promptIcon, confirmIcon;
+
+let currentElementTypeForAttributeDialog = ''; // To store the element type being configured
+
 // --- INITIALIZATION ---
 document.addEventListener('DOMContentLoaded', () => {
     // Get element references
@@ -139,9 +151,206 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- RIBBON BUTTON LISTENERS ---
     setupRibbonListeners();
 
+    // --- COMPONENT TREE BUTTON LISTENERS ---
+    document.getElementById('move-up').addEventListener('click', moveElementUp);
+    document.getElementById('move-down').addEventListener('click', moveElementDown);
+
     // --- SAVE BUTTON LISTENER ---
     document.getElementById('save-html').addEventListener('click', saveHtmlToFile);
-});
+
+    // --- CUSTOM DIALOG ELEMENTS ---
+    insertDialogOverlay = document.getElementById('insert-dialog-overlay');
+    dialogElementType = document.getElementById('dialog-element-type');
+    dialogInsertBtn = document.getElementById('dialog-insert-btn');
+    dialogCancelBtn = document.getElementById('dialog-cancel-btn');
+
+    attributeDialogOverlay = document.getElementById('attribute-dialog-overlay');
+    attributeDialogTitle = document.getElementById('attribute-dialog-title');
+    attributeFields = document.getElementById('attribute-fields');
+    attributeInsertBtn = document.getElementById('attribute-insert-btn');
+    attributeCancelBtn = document.getElementById('attribute-cancel-btn');
+    attributeIcon = document.getElementById('attribute-icon');
+
+    // Custom Alert Dialog Elements
+    alertDialogOverlay = document.getElementById('alert-dialog-overlay');
+    alertMessage = document.getElementById('alert-message');
+    alertOkBtn = document.getElementById('alert-ok-btn');
+
+    // Custom Prompt Dialog Elements
+    promptDialogOverlay = document.getElementById('prompt-dialog-overlay');
+    promptMessage = document.getElementById('prompt-message');
+    promptInput = document.getElementById('prompt-input');
+    promptOkBtn = document.getElementById('prompt-ok-btn');
+    promptCancelBtn = document.getElementById('prompt-cancel-btn');
+
+    // Custom Confirm Dialog Elements
+    confirmDialogOverlay = document.getElementById('confirm-dialog-overlay');
+    confirmMessage = document.getElementById('confirm-message');
+    confirmOkBtn = document.getElementById('confirm-ok-btn');
+    confirmCancelBtn = document.getElementById('confirm-cancel-btn');
+
+    alertIcon = document.getElementById('alert-icon');
+    promptIcon = document.getElementById('prompt-icon');
+    confirmIcon = document.getElementById('confirm-icon');
+
+    // --- DIALOG EVENT LISTENERS ---
+    dialogInsertBtn.addEventListener('click', () => {
+        const elementType = dialogElementType.value;
+        const targetElement = selectedElement || wysiwyg.contentDocument.body;
+
+        if (elementType === 'a' || elementType === 'input') {
+            hideInsertDialog();
+            showAttributeDialog(elementType);
+        } else {
+            // For other elements, check if targetElement is a valid container
+            if (targetElement.tagName === 'DIV' || targetElement.tagName === 'OL' || targetElement.tagName === 'UL' || targetElement.tagName === 'BODY') {
+                const newElement = wysiwyg.contentDocument.createElement(elementType);
+                newElement.textContent = `New ${elementType}`;
+                targetElement.appendChild(newElement);
+                syncViews();
+                hideInsertDialog();
+            } else {
+                customAlert('Please select a DIV, OL, UL, or BODY element to insert into.');
+            }
+        }
+    });
+
+    dialogCancelBtn.addEventListener('click', hideInsertDialog);
+
+    // --- ATTRIBUTE DIALOG EVENT LISTENERS ---
+    attributeInsertBtn.addEventListener('click', () => {
+        const elementType = currentElementTypeForAttributeDialog;
+        const targetElement = selectedElement || wysiwyg.contentDocument.body;
+
+        const newElement = wysiwyg.contentDocument.createElement(elementType);
+        if (elementType === 'a') {
+            newElement.href = document.getElementById('attr-href').value;
+            newElement.textContent = document.getElementById('attr-text-content').value;
+        } else if (elementType === 'input') {
+            newElement.type = document.getElementById('attr-type').value;
+            newElement.value = document.getElementById('attr-value').value;
+            newElement.placeholder = document.getElementById('attr-placeholder').value;
+        }
+        targetElement.appendChild(newElement);
+        syncViews();
+
+        hideAttributeDialog();
+    });
+
+    attributeCancelBtn.addEventListener('click', hideAttributeDialog);
+}); // Closing brace for DOMContentLoaded
+
+function showInsertDialog() {
+    insertDialogOverlay.style.display = 'block';
+    dialogElementType.value = 'div'; // Default selection
+}
+
+function hideInsertDialog() {
+    insertDialogOverlay.style.display = 'none';
+}
+
+function showAttributeDialog(elementType) {
+    currentElementTypeForAttributeDialog = elementType;
+    attributeFields.innerHTML = ''; // Clear previous fields
+    attributeDialogTitle.textContent = `Configure <${elementType}> Attributes`;
+
+    // Set icon based on element type
+    if (elementType === 'a') {
+        attributeIcon.src = 'input.png'; // Using input.png for link settings as well
+    } else if (elementType === 'input') {
+        attributeIcon.src = 'input.png';
+    }
+
+    if (elementType === 'a') {
+        attributeFields.innerHTML = `
+            <div class="prop-item">
+                <label for="attr-href">Href:</label>
+                <input type="text" id="attr-href" value="#">
+            </div>
+            <div class="prop-item">
+                <label for="attr-text-content">Text Content:</label>
+                <input type="text" id="attr-text-content" value="Link Text">
+            </div>
+        `;
+    } else if (elementType === 'input') {
+        attributeFields.innerHTML = `
+            <div class="prop-item">
+                <label for="attr-type">Type:</label>
+                <select id="attr-type">
+                    <option value="text">text</option>
+                    <option value="password">password</option>
+                    <option value="number">number</option>
+                    <option value="checkbox">checkbox</option>
+                    <option value="radio">radio</option>
+                    <option value="submit">submit</option>
+                    <option value="button">button</option>
+                </select>
+            </div>
+            <div class="prop-item">
+                <label for="attr-value">Value:</label>
+                <input type="text" id="attr-value">
+            </div>
+            <div class="prop-item">
+                <label for="attr-placeholder">Placeholder:</label>
+                <input type="text" id="attr-placeholder">
+            </div>
+        `;
+    }
+    attributeDialogOverlay.style.display = 'block';
+}
+
+function hideAttributeDialog() {
+    attributeDialogOverlay.style.display = 'none';
+}
+
+// --- CUSTOM ALERT/PROMPT/CONFIRM FUNCTIONS ---
+function customAlert(message, iconSrc = 'err.png') {
+    return new Promise(resolve => {
+        alertMessage.textContent = message;
+        alertIcon.src = iconSrc;
+        alertDialogOverlay.style.display = 'block';
+        alertOkBtn.onclick = () => {
+            alertDialogOverlay.style.display = 'none';
+            resolve();
+        };
+    });
+}
+
+function customPrompt(message, defaultValue = '', iconSrc = 'input.png') {
+    return new Promise(resolve => {
+        promptMessage.textContent = message;
+        promptInput.value = defaultValue;
+        promptIcon.src = iconSrc;
+        promptDialogOverlay.style.display = 'block';
+        promptInput.focus();
+
+        promptOkBtn.onclick = () => {
+            promptDialogOverlay.style.display = 'none';
+            resolve(promptInput.value);
+        };
+        promptCancelBtn.onclick = () => {
+            promptDialogOverlay.style.display = 'none';
+            resolve(null);
+        };
+    });
+}
+
+function customConfirm(message, iconSrc = 'warn.png') {
+    return new Promise(resolve => {
+        confirmMessage.textContent = message;
+        confirmIcon.src = iconSrc;
+        confirmDialogOverlay.style.display = 'block';
+
+        confirmOkBtn.onclick = () => {
+            confirmDialogOverlay.style.display = 'none';
+            resolve(true);
+        };
+        confirmCancelBtn.onclick = () => {
+            confirmDialogOverlay.style.display = 'none';
+            resolve(false);
+        };
+    });
+}
 
 function setupWysiwyg(iframe, content) {
     const doc = iframe.contentDocument;
@@ -176,11 +385,14 @@ function setupRibbonListeners() {
         if (textContent) newEl.textContent = textContent;
         Object.entries(attributes).forEach(([key, value]) => newEl.setAttribute(key, value));
 
-        range.insertNode(newEl);
-        range.setStartAfter(newEl);
-        range.collapse(true);
-        selection.removeAllRanges();
-        selection.addRange(range);
+        if (selectedElement) {
+            range.insertNode(newEl);
+            range.setStartAfter(newEl);
+            selection.removeAllRanges();
+            selection.addRange(range);
+        } else {
+            doc.body.appendChild(newEl);
+        }
         syncViews();
     };
 
@@ -193,15 +405,29 @@ function setupRibbonListeners() {
     document.getElementById('insert-h1').addEventListener('click', () => insertElement('h1', 'Heading 1'));
     document.getElementById('insert-h2').addEventListener('click', () => insertElement('h2', 'Heading 2'));
     document.getElementById('insert-h3').addEventListener('click', () => insertElement('h3', 'Heading 3'));
+    document.getElementById('insert-a').addEventListener('click', () => {
+        showAttributeDialog('a');
+    });
 
-    document.getElementById('insert-img').addEventListener('click', () => {
-        const url = prompt('Enter image URL:', 'https://via.placeholder.com/100');
+    document.getElementById('insert-img').addEventListener('click', async () => {
+        const url = await customPrompt('Enter image URL:', 'https://via.placeholder.com/100');
         if (url) insertElement('img', null, { src: url, style: 'width: 100px;' });
     });
 
     document.getElementById('insert-ul').addEventListener('click', () => insertElement('ul', '<li>List Item</li>', { style: 'border: 1px dotted grey; padding: 20px;' }));
     document.getElementById('insert-ol').addEventListener('click', () => insertElement('ol', '<li>List Item</li>', { style: 'border: 1px dotted grey; padding: 20px;' }));
     document.getElementById('insert-li').addEventListener('click', () => insertElement('li', 'List Item'));
+
+    document.getElementById('insert-input').addEventListener('click', () => {
+        showAttributeDialog('input');
+    });
+    document.getElementById('insert-textarea').addEventListener('click', () => insertElement('textarea', 'New Textarea'));
+    document.getElementById('insert-select').addEventListener('click', () => insertElement('select', '<option>Option 1</option><option>Option 2</option>'));
+
+    document.getElementById('insert-table').addEventListener('click', () => insertElement('table', '<tr><td>Cell 1</td><td>Cell 2</td></tr>', { border: '1px solid black', style: 'width: 100%; border-collapse: collapse;' }));
+    document.getElementById('insert-tr').addEventListener('click', () => insertElement('tr', '<td>New Cell</td>'));
+    document.getElementById('insert-td').addEventListener('click', () => insertElement('td', 'New Cell'));
+    document.getElementById('insert-th').addEventListener('click', () => insertElement('th', 'New Header'));
 
     // Font style buttons
     document.getElementById('toggle-bold').addEventListener('click', () => {
@@ -220,7 +446,34 @@ function setupRibbonListeners() {
         syncViews();
     });
 
+    document.getElementById('move-up').addEventListener('click', moveElementUp);
+    document.getElementById('move-down').addEventListener('click', moveElementDown);
     document.getElementById('delete-element').addEventListener('click', deleteSelectedElement);
+    document.getElementById('insert-into').addEventListener('click', insertIntoSelected);
+}
+
+function insertIntoSelected() {
+    const targetElement = selectedElement || wysiwyg.contentDocument.body;
+    const tagName = targetElement.tagName;
+    if (tagName === 'DIV' || tagName === 'OL' || tagName === 'UL' || tagName === 'BODY') {
+        showInsertDialog();
+    } else {
+        customAlert('Please select a DIV, OL, UL, or BODY element to insert into.');
+    }
+}
+
+function moveElementUp() {
+    if (selectedElement && selectedElement.previousElementSibling) {
+        selectedElement.parentNode.insertBefore(selectedElement, selectedElement.previousElementSibling);
+        syncViews();
+    }
+}
+
+function moveElementDown() {
+    if (selectedElement && selectedElement.nextElementSibling) {
+        selectedElement.parentNode.insertBefore(selectedElement.nextElementSibling, selectedElement);
+        syncViews();
+    }
 }
 
 // --- VIEW SWITCHING ---
@@ -441,7 +694,6 @@ function buildTree(root, parentElement, depth) {
     for (let i = 0; i < children.length; i++) {
         const child = children[i];
         const li = document.createElement('li');
-        li.draggable = true;
         li.dataset.path = getDomPath(child);
 
         const titleSpan = document.createElement('span');
@@ -492,72 +744,6 @@ document.getElementById('component-tree').addEventListener('click', (e) => {
             targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
     }
-});
-
-let draggedElementPath = null;
-
-document.getElementById('component-tree').addEventListener('dragstart', (e) => {
-    draggedElementPath = e.target.dataset.path;
-    e.target.classList.add('dragging');
-    e.dataTransfer.effectAllowed = 'move';
-});
-
-document.getElementById('component-tree').addEventListener('dragend', (e) => {
-    e.target.classList.remove('dragging');
-    document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
-});
-
-document.getElementById('component-tree').addEventListener('dragover', (e) => {
-    e.preventDefault();
-    document.querySelectorAll('.drag-over-into, .drag-over-before, .drag-over-after').forEach(el => el.classList.remove('drag-over-into', 'drag-over-before', 'drag-over-after'));
-
-    const targetLi = e.target.closest('li');
-    if (!targetLi) return;
-
-    const rect = targetLi.getBoundingClientRect();
-    const y = e.clientY - rect.top; // Y position within the targetLi
-
-    const third = rect.height / 3;
-
-    if (y < third) {
-        // Top third: insert before
-        targetLi.classList.add('drag-over-before');
-    } else if (y > third * 2) {
-        // Bottom third: insert after
-        targetLi.classList.add('drag-over-after');
-    } else {
-        // Middle third: insert into
-        targetLi.classList.add('drag-over-into');
-    }
-});
-
-document.getElementById('component-tree').addEventListener('drop', (e) => {
-    e.preventDefault();
-    document.querySelectorAll('.drag-over-into, .drag-over-before, .drag-over-after').forEach(el => el.classList.remove('drag-over-into', 'drag-over-before', 'drag-over-after'));
-
-    const dropTargetLi = e.target.closest('li');
-    if (!dropTargetLi || !draggedElementPath) return;
-
-    const draggedPath = draggedElementPath.split('-').map(Number);
-    const dropTargetPath = dropTargetLi.dataset.path.split('-').map(Number);
-
-    const draggedEl = findElementByPath(wysiwyg.contentDocument.body, draggedPath);
-    const dropTargetEl = findElementByPath(wysiwyg.contentDocument.body, dropTargetPath);
-
-    if (draggedEl && dropTargetEl && draggedEl !== dropTargetEl) {
-        if (dropTargetLi.classList.contains('drag-over-into')) {
-            // Insert into the drop target
-            dropTargetEl.appendChild(draggedEl);
-        } else if (dropTargetLi.classList.contains('drag-over-before')) {
-            // Insert before the drop target
-            dropTargetEl.parentNode.insertBefore(draggedEl, dropTargetEl);
-        } else if (dropTargetLi.classList.contains('drag-over-after')) {
-            // Insert after the drop target
-            dropTargetEl.parentNode.insertBefore(draggedEl, dropTargetEl.nextSibling);
-        }
-        syncViews();
-    }
-    draggedElementPath = null;
 });
 
 function highlightComponentInTree() {

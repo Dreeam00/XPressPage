@@ -200,24 +200,6 @@ body {
     border: 1px dotted #1E4E8A;
 }
 
-#component-tree .dragging {
-    opacity: 0.5;
-}
-
-/* Component Tree Drag & Drop Visual Cues */
-#component-tree .drag-over-before {
-    border-top: 2px solid #0078D7;
-}
-
-#component-tree .drag-over-after {
-    border-bottom: 2px solid #0078D7;
-}
-
-#component-tree .drag-over-into {
-    outline: 2px solid #0078D7;
-    outline-offset: -2px;
-}
-
 #properties-panel { padding: 10px; overflow-y: auto; }
 .prop-header {
     font-weight: bold;
@@ -234,4 +216,210 @@ body {
     color: #1E4E8A;
     flex-grow: 1;
     align-self: center;
+}
+
+/* Custom Dialog Styles */
+#insert-dialog-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    z-index: 1000;
+}
+
+#insert-dialog {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #EAF2FB; /* Light Office 2007 background */
+    border: 1px solid #95B3D8; /* Office 2007 border */
+    border-radius: 5px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    padding: 20px;
+    width: 300px;
+    font-family: 'Segoe UI', Calibri, Arial, sans-serif;
+    font-size: 12px;
+}
+
+#insert-dialog h3 {
+    margin-top: 0;
+    color: #1E4E8A; /* Office 2007 blue */
+    border-bottom: 1px solid #C2D9F2;
+    padding-bottom: 5px;
+    margin-bottom: 15px;
+}
+
+#insert-dialog label {
+    display: block;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+#insert-dialog select {
+    width: 100%;
+    padding: 5px;
+    border: 1px solid #ABC7EC; /* Office 2007 input border */
+    border-radius: 3px;
+    background-color: #FFF;
+}
+
+#insert-dialog button {
+    background: linear-gradient(to bottom, #EAF2FB, #D9E5F3);
+    border: 1px solid #95B3D8;
+    padding: 5px 10px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 12px;
+    color: #1E4E8A;
+    margin-left: 10px;
+}
+
+#insert-dialog button:hover {
+    background: linear-gradient(to bottom, #FFF3A5, #FEE481);
+    border-color: #FBCB89;
+}
+
+/* Custom Attribute Dialog Styles (reusing main dialog styles) */
+#attribute-dialog-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    z-index: 1001;
+}
+
+#attribute-dialog {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #EAF2FB;
+    border: 1px solid #95B3D8;
+    border-radius: 5px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    padding: 20px;
+    width: 350px;
+    font-family: 'Segoe UI', Calibri, Arial, sans-serif;
+    font-size: 12px;
+}
+
+#attribute-dialog h3 {
+    margin-top: 0;
+    color: #1E4E8A;
+    border-bottom: 1px solid #C2D9F2;
+    padding-bottom: 5px;
+    margin-bottom: 15px;
+}
+
+#attribute-fields .prop-item {
+    margin-bottom: 10px;
+}
+
+#attribute-fields label {
+    display: block;
+    margin-bottom: 3px;
+    color: #333;
+}
+
+#attribute-fields input[type="text"] {
+    width: calc(100% - 10px);
+    padding: 5px;
+    border: 1px solid #ABC7EC;
+    border-radius: 3px;
+    background-color: #FFF;
+}
+
+#attribute-dialog button {
+    background: linear-gradient(to bottom, #EAF2FB, #D9E5F3);
+    border: 1px solid #95B3D8;
+    padding: 5px 10px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 12px;
+    color: #1E4E8A;
+    margin-left: 10px;
+}
+
+#attribute-dialog button:hover {
+    background: linear-gradient(to bottom, #FFF3A5, #FEE481);
+    border-color: #FBCB89;
+}
+
+/* Custom Alert/Prompt/Confirm Dialog Styles (reusing main dialog styles) */
+.custom-dialog-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    z-index: 1000;
+}
+
+.custom-dialog {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #EAF2FB;
+    border: 1px solid #95B3D8;
+    border-radius: 5px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    padding: 20px;
+    width: 300px;
+    font-family: 'Segoe UI', Calibri, Arial, sans-serif;
+    font-size: 12px;
+}
+
+.custom-dialog h3 {
+    margin-top: 0;
+    color: #1E4E8A;
+    border-bottom: 1px solid #C2D9F2;
+    padding-bottom: 5px;
+    margin-bottom: 15px;
+}
+
+.custom-dialog p {
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.custom-dialog input[type="text"] {
+    width: calc(100% - 10px);
+    padding: 5px;
+    border: 1px solid #ABC7EC;
+    border-radius: 3px;
+    background-color: #FFF;
+    margin-bottom: 15px;
+}
+
+.custom-dialog button {
+    background: linear-gradient(to bottom, #EAF2FB, #D9E5F3);
+    border: 1px solid #95B3D8;
+    padding: 5px 10px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 12px;
+    color: #1E4E8A;
+    margin-left: 10px;
+}
+
+.custom-dialog button:hover {
+    background: linear-gradient(to bottom, #FFF3A5, #FEE481);
+    border-color: #FBCB89;
+}
+
+.custom-dialog-icon {
+    vertical-align: middle;
+    margin-right: 10px;
+    width: 24px;
+    height: 24px;
 }
