@@ -9,9 +9,25 @@
 </head>
 <body>
     <div id="app-header">
-        <img src="icon.png" alt="XPress Page Logo" style="height: 24px; margin-right: 10px;"><div style="font-size: 18px; color: #1E4E8A; font-weight: bold;">XPress Page</div>
-        <button id="save-html" class="app-header-button"><img src="save.png" alt="Save" width="16"></button>
+        <div id="office-button">
+            <img src="icon.png" alt="Office Button">
+        </div>
+        <div style="font-size: 18px; color: #1E4E8A; font-weight: bold; margin-left: 10px;">XPress Page</div>
         <button id="toggle-clippy-button" class="app-header-button" style="margin-left: auto;">Clippy表示/非表示</button>
+    </div>
+
+    <!-- Office Menu -->
+    <div id="office-menu" style="display: none;">
+        <div class="office-menu-item" id="menu-new">
+            <img src="icon.png" alt="New">
+            <span>新規作成</span>
+            <small>新しい白紙のページを作成します。</small>
+        </div>
+        <div class="office-menu-item" id="menu-save">
+            <img src="save.png" alt="Save">
+            <span>名前を付けて保存</span>
+            <small>ページをHTMLファイルとして保存します。</small>
+        </div>
     </div>
     <div id="ribbon-container">
         <div id="ribbon-tabs">

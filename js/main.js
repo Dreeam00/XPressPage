@@ -222,7 +222,35 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('move-down').addEventListener('click', moveElementDown);
 
     // --- SAVE BUTTON LISTENER ---
-    document.getElementById('save-html').addEventListener('click', saveHtmlToFile);
+    document.getElementById('menu-save').addEventListener('click', saveHtmlToFile);
+
+    // --- OFFICE BUTTON LISTENER ---
+    const officeButton = document.getElementById('office-button');
+    const officeMenu = document.getElementById('office-menu');
+    officeButton.addEventListener('click', (e) => {
+        e.stopPropagation();
+        officeMenu.style.display = officeMenu.style.display === 'block' ? 'none' : 'block';
+    });
+
+    // Hide menu if clicking elsewhere
+    document.addEventListener('click', (e) => {
+        if (!officeMenu.contains(e.target) && e.target !== officeButton) {
+            officeMenu.style.display = 'none';
+        }
+    });
+
+    // --- NEW BUTTON LISTENER ---
+    document.getElementById('menu-new').addEventListener('click', () => {
+        customConfirm('現在の内容を破棄して、新しいページを作成しますか？', 'warn.png').then(confirmed => {
+            if (confirmed) {
+                const blankContent = '<p>新しいページ</p>';
+                wysiwyg.contentDocument.body.innerHTML = blankContent;
+                wysiwygSplit.contentDocument.body.innerHTML = blankContent;
+                syncViews();
+                officeMenu.style.display = 'none';
+            }
+        });
+    });
 
     // --- CUSTOM DIALOG ELEMENTS ---
     insertDialogOverlay = document.getElementById('insert-dialog-overlay');

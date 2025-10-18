@@ -16,7 +16,10 @@ body {
     border-bottom: 1px solid #95B3D8;
     padding: 3px 5px;
     display: flex;
+    align-items: center; /* Align items vertically */
     flex-shrink: 0;
+    position: relative; /* For z-index context */
+    z-index: 100; /* Ensure header is above menu */
 }
 
 
@@ -521,4 +524,71 @@ body {
 
 .hidden {
     display: none !important;
+}
+
+/* Office Button and Menu */
+#office-button {
+    width: 36px;
+    height: 36px;
+    background: radial-gradient(circle, #FFFFFF, #F0F0F0, #E0E0E0);
+    border: 1px solid #95B3D8;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    flex-shrink: 0;
+}
+
+#office-button:hover {
+    background: radial-gradient(circle, #FFF3A5, #FEE481, #FBCB89);
+}
+
+#office-button img {
+    width: 24px;
+    height: 24px;
+}
+
+#office-menu {
+    position: absolute;
+    top: 40px; /* Position below the header */
+    left: 5px;
+    background-color: #FFFFFF;
+    border: 1px solid #95B3D8;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    z-index: 2000; /* Ensure menu is on top */
+    width: 350px;
+    padding: 5px;
+}
+
+.office-menu-item {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    cursor: pointer;
+    border: 1px solid transparent;
+}
+
+.office-menu-item:hover {
+    background: linear-gradient(to bottom, #FFF3A5, #FEE481);
+    border: 1px solid #FBCB89;
+    border-radius: 3px;
+}
+
+.office-menu-item img {
+    width: 32px;
+    height: 32px;
+    margin-right: 10px;
+}
+
+.office-menu-item span {
+    font-size: 14px;
+    font-weight: bold;
+    color: #1E4E8A;
+}
+
+.office-menu-item small {
+    margin-left: 10px;
+    color: #555;
 }
