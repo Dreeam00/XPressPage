@@ -423,3 +423,102 @@ body {
     width: 24px;
     height: 24px;
 }
+
+/* Clippy Assistant */
+#clippy-assistant {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 10000;
+    cursor: pointer;
+    transition: transform 0.3s ease-in-out;
+}
+
+#clippy-assistant:hover {
+    transform: scale(1.05);
+}
+
+#clippy-speech-bubble {
+    position: absolute;
+    bottom: 80px;
+    right: 90px; /* Adjusted from left to right */
+    background-color: #FFFFCC;
+    border: 1px solid #95B3D8;
+    padding: 10px;
+    border-radius: 10px;
+    min-height: 80px; /* Increased height to accommodate button and trivia */
+    width: 180px; /* Increased width */
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+    display: none; /* Hidden by default */
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+#clippy-speech-bubble.active {
+    display: flex;
+}
+
+#clippy-speech-bubble .speech-bubble-arrow-border {
+    position: absolute;
+    bottom: -10px;
+    right: 20px; /* Adjusted from left to right */
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-top: 10px solid #95B3D8;
+}
+
+#clippy-speech-bubble .speech-bubble-arrow-fill {
+    position: absolute;
+    bottom: -9px;
+    right: 20px; /* Adjusted from left to right */
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-top: 10px solid #FFFFCC;
+}
+
+#clippy-hint-text {
+    margin: 0;
+    font-size: 12px;
+    color: #333;
+    flex-grow: 1;
+}
+
+.clippy-button {
+    background-color: #EAF2FB; /* Solid background for consistency */
+    border: 1px solid #95B3D8;
+    padding: 3px 8px;
+    margin-top: 8px; /* Increased margin-top */
+    border-radius: 5px; /* More rounded corners */
+    cursor: pointer;
+    font-size: 12px;
+    color: #1E4E8A;
+    display: block;
+    width: 100%; /* Full width within padding */
+    box-sizing: border-box;
+    text-align: center;
+}
+
+.clippy-button:hover {
+    background: linear-gradient(to bottom, #FFF3A5, #FEE481);
+    border-color: #FBCB89;
+}
+
+.clippy-trivia-display {
+    margin-top: 5px;
+    font-size: 12px;
+    color: #333;
+    flex-grow: 1; /* Allow it to take available space */
+    overflow-y: auto;
+    background-color: #FDFDFD; /* Light background for readability */
+    border: 1px solid #C2D9F2; /* Subtle border */
+    padding: 5px;
+    border-radius: 3px;
+}
+
+.hidden {
+    display: none !important;
+}

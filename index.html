@@ -11,6 +11,7 @@
     <div id="app-header">
         <img src="icon.png" alt="XPress Page Logo" style="height: 24px; margin-right: 10px;"><div style="font-size: 18px; color: #1E4E8A; font-weight: bold;">XPress Page</div>
         <button id="save-html" class="app-header-button"><img src="save.png" alt="Save" width="16"></button>
+        <button id="toggle-clippy-button" class="app-header-button" style="margin-left: auto;">Clippy表示/非表示</button>
     </div>
     <div id="ribbon-container">
         <div id="ribbon-tabs">
@@ -199,6 +200,22 @@
                 <button id="confirm-ok-btn" style="background: linear-gradient(to bottom, #EAF2FB, #D9E5F3); border: 1px solid #95B3D8; padding: 5px 10px; border-radius: 3px; cursor: pointer; font-size: 12px; color: #1E4E8A; margin-left: 10px;">OK</button>
                 <button id="confirm-cancel-btn" style="background: linear-gradient(to bottom, #EAF2FB, #D9E5F3); border: 1px solid #95B3D8; padding: 5px 10px; border-radius: 3px; cursor: pointer; font-size: 12px; color: #1E4E8A; margin-left: 10px;">Cancel</button>
             </div>
+        </div>
+    </div>
+
+    <!-- Clippy Assistant -->
+    <div id="clippy-assistant">
+        <img src="clippy.png" alt="Clippy Assistant" style="width: 80px; height: auto;">
+        <div id="clippy-speech-bubble">
+            <p id="clippy-hint-text">何かお手伝いできることはありますか？</p>
+            <div style="display: flex; justify-content: space-around; margin-top: 8px;">
+                <button id="clippy-trivia-button" class="clippy-button" style="flex-grow: 1; margin-right: 5px;">豆知識</button>
+                <button id="clippy-general-hint-button" class="clippy-button" style="flex-grow: 1; margin-left: 5px;">ヒント</button>
+            </div>
+            <div id="clippy-trivia-display" class="clippy-trivia-display hidden"></div>
+            <div id="clippy-general-hint-display" class="clippy-trivia-display hidden"></div>
+            <div class="speech-bubble-arrow-border"></div>
+            <div class="speech-bubble-arrow-fill"></div>
         </div>
     </div>
 </body>
