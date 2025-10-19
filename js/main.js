@@ -3,6 +3,7 @@ let wysiwyg, wysiwygSplit, codeFull, codeSplit;
 
 // Global references for dialog elements
 let insertDialogOverlay, dialogElementType, dialogInsertBtn, dialogCancelBtn;
+let templateList, templateCancelBtn, templateSelect, templateDialog, templateSaveBtn, templateDeleteBtn, templateDialogOverlay;
 let attributeDialogOverlay, attributeDialogTitle, attributeFields, attributeInsertBtn, attributeCancelBtn;
 let attributeIcon;
 let alertDialogOverlay, alertMessage, alertOkBtn;
@@ -45,6 +46,13 @@ const generalHints = [
 
 // --- INITIALIZATION ---
 document.addEventListener('DOMContentLoaded', () => {
+    // Load user templates from localStorage
+    const storedTemplates = localStorage.getItem('userTemplates');
+    if (storedTemplates) {
+        const userTemplates = JSON.parse(storedTemplates);
+        templates.push(...userTemplates);
+    }
+
     // Get element references
     wysiwyg = document.getElementById('wysiwyg-editor');
     wysiwygSplit = document.getElementById('wysiwyg-editor-split');
@@ -52,6 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
     codeSplit = document.getElementById('code-editor-split');
 
     clippyAssistant = document.getElementById('clippy-assistant');
+    console.log("clippyAssistant after getElementById:", clippyAssistant);
     clippySpeechBubble = document.getElementById('clippy-speech-bubble');
     clippyHintText = document.getElementById('clippy-hint-text');
     clippyTriviaButton = document.getElementById('clippy-trivia-button');
@@ -217,6 +226,37 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- RIBBON BUTTON LISTENERS ---
     setupRibbonListeners();
 
+    // --- TEMPLATE DIALOG EVENT LISTENERS ---
+    const insertTemplateButton = document.getElementById('insert-template');
+    console.log("insertTemplateButton (after getElementById):", insertTemplateButton);
+    if (insertTemplateButton) {
+        insertTemplateButton.addEventListener('click', () => {
+            console.log("insertTemplateButton clicked, calling showTemplateDialog");
+            showTemplateDialog();
+        });
+    }
+    console.log("templateCancelBtn:", templateCancelBtn);
+    if (templateCancelBtn) {
+        templateCancelBtn.addEventListener('click', hideTemplateDialog);
+    }
+
+    if (templateSelect) {
+        templateSelect.addEventListener('change', () => {
+            const selectedIndex = templateSelect.value;
+            if (selectedIndex !== "") {
+                const templateHtml = templates[selectedIndex].html;
+                const activeWysiwyg = (document.querySelector('.view.active').id === 'split-view') ? wysiwygSplit : wysiwyg;
+                const doc = activeWysiwyg.contentDocument;
+                activeWysiwyg.focus();
+                doc.body.insertAdjacentHTML('beforeend', templateHtml);
+                syncViews();
+                hideTemplateDialog();
+            }
+        });
+    }
+
+
+
     // --- COMPONENT TREE BUTTON LISTENERS ---
     document.getElementById('move-up').addEventListener('click', moveElementUp);
     document.getElementById('move-down').addEventListener('click', moveElementDown);
@@ -239,6 +279,37 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // --- CLIPBOARD ACTIONS ---
+    let clipboard = null; // Simple clipboard simulation
+
+    function copySelection() {
+        if (selectedElement) {
+            clipboard = selectedElement.cloneNode(true);
+            customAlert('コピーしました', 'icons/dialog/info.png');
+        }
+    }
+
+    function cutSelection() {
+        if (selectedElement) {
+            clipboard = selectedElement.cloneNode(true);
+            deleteSelectedElement();
+            customAlert('カットしました', 'icons/dialog/info.png');
+        }
+    }
+
+    function pasteFromClipboard() {
+        if (clipboard) {
+            const target = selectedElement || wysiwyg.contentDocument.body;
+            target.appendChild(clipboard.cloneNode(true));
+            syncViews();
+        }
+    }
+
+    // Ribbon Clipboard Listeners
+    document.getElementById('ribbon-copy').addEventListener('click', copySelection);
+    document.getElementById('ribbon-cut').addEventListener('click', cutSelection);
+    document.getElementById('ribbon-paste').addEventListener('click', pasteFromClipboard);
+
     // --- NEW BUTTON LISTENER ---
     document.getElementById('menu-new').addEventListener('click', () => {
         customConfirm('現在の内容を破棄して、新しいページを作成しますか？', 'warn.png').then(confirmed => {
@@ -252,11 +323,118 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    // --- OPEN BUTTON LISTENER ---
+    const menuOpen = document.getElementById('menu-open');
+    const fileInput = document.getElementById('file-input');
+
+    if (menuOpen) {
+        menuOpen.addEventListener('click', () => {
+            fileInput.click(); // Trigger the hidden file input
+            officeMenu.style.display = 'none'; // Hide office menu after click
+        });
+    }
+
+    if (fileInput) {
+        fileInput.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    let content = e.target.result;
+                    const fileExtension = file.name.split('.').pop().toLowerCase();
+
+                    if (fileExtension === 'xpp') {
+                        try {
+                            const xppContent = JSON.parse(content);
+                            if (xppContent.htmlContent) {
+                                content = xppContent.htmlContent;
+                            } else {
+                                customAlert('XPPファイルにhtmlContentが見つかりません。', 'icons/dialog/error.png');
+                                return;
+                            }
+                        } catch (error) {
+                            customAlert('XPPファイルの解析中にエラーが発生しました。', 'icons/dialog/error.png');
+                            console.error('Error parsing XPP file:', error);
+                            return;
+                        }
+                        wysiwyg.contentDocument.body.innerHTML = content;
+                        wysiwygSplit.contentDocument.body.innerHTML = content;
+                        syncViews();
+                        customAlert('XPPファイルが正常に読み込まれました！', 'icons/dialog/info.png');
+                    } else if (fileExtension === 'xppt') {
+                        try {
+                            const loadedTemplates = JSON.parse(content);
+                            if (Array.isArray(loadedTemplates) && loadedTemplates.every(t => t.name && t.html)) {
+                                templates.push(...loadedTemplates);
+                                localStorage.setItem('userTemplates', JSON.stringify(templates.filter(t => !t.isDefault))); // Save only user-defined templates
+                                showTemplateDialog(); // Refresh the template list
+                                customAlert('XPPテンプレートが正常に読み込まれました！', 'icons/dialog/info.png');
+                            } else {
+                                customAlert('無効なXPPテンプレートファイル形式です。', 'icons/dialog/error.png');
+                            }
+                        } catch (error) {
+                            customAlert('XPPテンプレートファイルの解析中にエラーが発生しました。', 'icons/dialog/error.png');
+                            console.error('Error parsing XPP template file:', error);
+                        }
+                    } else { // Assume HTML for other extensions
+                        wysiwyg.contentDocument.body.innerHTML = content;
+                        wysiwygSplit.contentDocument.body.innerHTML = content;
+                        syncViews();
+                        customAlert('HTMLファイルが正常に読み込まれました！', 'icons/dialog/info.png');
+                    }
+                };
+                reader.onerror = () => {
+                    customAlert('ファイルの読み込み中にエラーが発生しました。', 'icons/dialog/error.png');
+                };
+                reader.readAsText(file);
+            }
+        });
+    }
+
     // --- CUSTOM DIALOG ELEMENTS ---
     insertDialogOverlay = document.getElementById('insert-dialog-overlay');
     dialogElementType = document.getElementById('dialog-element-type');
     dialogInsertBtn = document.getElementById('dialog-insert-btn');
     dialogCancelBtn = document.getElementById('dialog-cancel-btn');
+
+    console.log("Attempting to get element with ID:", 'template-dialog');
+    templateDialog = document.getElementById('template-dialog');
+    templateSelect = document.getElementById('template-select');
+    templateDialogOverlay = document.getElementById('template-dialog-overlay');
+    console.log("templateDialog (after getElementById):", templateDialog);
+    if (templateDialog) {
+        templateList = document.getElementById('template-list');
+        templateCancelBtn = document.getElementById('template-cancel-btn');
+        templateSaveBtn = document.getElementById('template-save-btn');
+        templateDeleteBtn = document.getElementById('template-delete-btn');
+    }
+
+    if (templateCancelBtn) {
+        templateCancelBtn.addEventListener('click', hideTemplateDialog);
+    }
+
+    if (templateSelect) {
+        templateSelect.addEventListener('change', () => {
+            const selectedIndex = templateSelect.value;
+            if (selectedIndex !== "") {
+                const templateHtml = templates[selectedIndex].html;
+                const activeWysiwyg = (document.querySelector('.view.active').id === 'split-view') ? wysiwygSplit : wysiwyg;
+                const doc = activeWysiwyg.contentDocument;
+                activeWysiwyg.focus();
+                doc.body.insertAdjacentHTML('beforeend', templateHtml);
+                syncViews();
+                hideTemplateDialog();
+            }
+        });
+    }
+
+    if (templateSaveBtn) {
+        templateSaveBtn.addEventListener('click', saveTemplate);
+    }
+
+    if (templateDeleteBtn) {
+        templateDeleteBtn.addEventListener('click', deleteTemplate);
+    }
 
     attributeDialogOverlay = document.getElementById('attribute-dialog-overlay');
     attributeDialogTitle = document.getElementById('attribute-dialog-title');
@@ -466,7 +644,54 @@ function hideAttributeDialog() {
     attributeDialogOverlay.style.display = 'none';
 }
 
-// --- CUSTOM ALERT/PROMPT/CONFIRM FUNCTIONS ---
+function showTemplateDialog() {
+    console.log("showTemplateDialog called");
+    // テンプレート選択肢を更新
+    templateSelect.innerHTML = ''; // Clear existing options
+    templates.forEach((template, index) => {
+        const option = document.createElement('option');
+        option.value = index;
+        option.textContent = template.name;
+        templateSelect.appendChild(option);
+    });
+    templateDialogOverlay.style.display = 'block';
+    templateDialog.style.display = 'block';
+}
+
+function hideTemplateDialog() {
+    templateDialogOverlay.style.display = 'none';
+    templateDialog.style.display = 'none';
+}
+
+    if (templateCancelBtn) {
+        templateCancelBtn.addEventListener('click', hideTemplateDialog);
+    }
+
+async function saveTemplate() {
+    const templateName = await customPrompt('テンプレート名を入力してください:', '', 'icons/dialog/prompt.png');
+    if (templateName) {
+        const activeWysiwyg = (document.querySelector('.view.active').id === 'split-view') ? wysiwygSplit : wysiwyg;
+        const templateHtml = activeWysiwyg.contentDocument.body.innerHTML;
+        templates.push({ name: templateName, html: templateHtml });
+        localStorage.setItem('userTemplates', JSON.stringify(templates));
+        customAlert('テンプレートが保存されました！', 'icons/dialog/info.png');
+        showTemplateDialog(); // Re-populate dropdown
+    }
+}
+
+async function deleteTemplate() {
+    const selectedIndex = templateSelect.value;
+    if (selectedIndex !== "") {
+        const confirmed = await customConfirm('選択したテンプレートを削除してもよろしいですか？', 'icons/dialog/warning.png');
+        if (confirmed) {
+            templates.splice(selectedIndex, 1);
+            localStorage.setItem('userTemplates', JSON.stringify(templates));
+            customAlert('テンプレートが削除されました。', 'icons/dialog/info.png');
+            showTemplateDialog(); // Re-populate dropdown
+        }
+    }
+}
+
 function customAlert(message, iconSrc = 'err.png') {
     return new Promise(resolve => {
         alertMessage.textContent = message;
@@ -602,6 +827,44 @@ function setupRibbonListeners() {
     document.getElementById('move-down').addEventListener('click', moveElementDown);
     document.getElementById('delete-element').addEventListener('click', deleteSelectedElement);
     document.getElementById('insert-into').addEventListener('click', insertIntoSelected);
+
+    // Save Component button
+    document.getElementById('save-component').addEventListener('click', saveComponentAsTemplate);
+}
+
+async function saveComponentAsTemplate() {
+    if (!selectedElement) {
+        customAlert('保存するコンポーネントを選択してください。', 'icons/dialog/warning.png');
+        return;
+    }
+
+    const templateName = await customPrompt('テンプレート名を入力してください:', '', 'icons/dialog/prompt.png');
+    if (!templateName) return; // User cancelled
+
+    const templateDescription = await customPrompt('テンプレートの説明を入力してください:', '', 'icons/dialog/prompt.png');
+    if (!templateDescription) return; // User cancelled
+
+    const componentHtml = selectedElement.outerHTML;
+
+    const newTemplate = {
+        name: templateName,
+        description: templateDescription,
+        html: componentHtml
+    };
+
+    const filename = await customPrompt('ファイル名を入力してください (例: mycomponent.xppt):', `${templateName.replace(/\s/g, '').toLowerCase()}.xppt`, 'icons/dialog/prompt.png');
+    if (!filename) return; // User cancelled
+
+    const fileToSave = new Blob([JSON.stringify([newTemplate], null, 2)], { type: 'application/json' });
+
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(fileToSave);
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(a.href);
+    customAlert(`${filename} が保存されました！`, 'icons/dialog/info.png');
 }
 
 function insertIntoSelected() {
@@ -994,68 +1257,83 @@ function rgbToHex(rgb) {
 async function saveHtmlToFile() {
     let htmlContent = codeFull.value; // Get content from the full code editor
 
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(htmlContent, 'text/html');
-    const images = doc.querySelectorAll('img');
+    const filename = await customPrompt('ファイル名を入力してください (例: mypage.html, mypage.xpp, または mytemplates.xppt):', 'index.html', 'icons/dialog/prompt.png');
+    if (!filename) return; // User cancelled
 
-    const conversionPromises = [];
-    images.forEach(img => {
-        const originalSrc = img.getAttribute('src');
-        if (originalSrc && !originalSrc.startsWith('data:image')) {
-            conversionPromises.push(convertImageToBase64(originalSrc).then(base64Src => {
-                img.setAttribute('src', base64Src);
-            }));
+    const fileExtension = filename.split('.').pop().toLowerCase();
+    let fileToSave;
+    let mimeType;
+
+    if (fileExtension === 'xpp') {
+        const xppContent = { htmlContent: htmlContent };
+        fileToSave = new Blob([JSON.stringify(xppContent, null, 2)], { type: 'application/json' });
+        mimeType = 'application/json';
+    } else if (fileExtension === 'xppt') {
+        fileToSave = new Blob([JSON.stringify(templates, null, 2)], { type: 'application/json' });
+        mimeType = 'application/json';
+    } else {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(htmlContent, 'text/html');
+        const images = doc.querySelectorAll('img');
+
+        const conversionPromises = [];
+        images.forEach(img => {
+            const originalSrc = img.getAttribute('src');
+            if (originalSrc && !originalSrc.startsWith('data:image')) {
+                conversionPromises.push(convertImageToBase64(originalSrc).then(base64Src => {
+                    img.setAttribute('src', base64Src);
+                }));
+            }
+        });
+
+        await Promise.all(conversionPromises);
+
+        if (doc.body) {
+            htmlContent = doc.body.innerHTML;
+        } else {
+            console.warn("Parsed document body is null, using original htmlContent.");
         }
-    });
 
-    await Promise.all(conversionPromises);
-
-    // Get the modified HTML from the body of the parsed document
-    htmlContent = doc.body.innerHTML;
-
-    // Append the banner to the saved HTML content
-    const bannerHtml = `
-        <div style="
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            background-color: #f0f0f0;
-            border-top: 1px solid #ccc;
-            padding: 10px;
-            text-align: center;
-            font-family: 'Segoe UI', Arial, sans-serif;
-            font-size: 12px;
-            color: #333;
-            z-index: 9999;
-        ">
-            このページはXPress Pageで作成されました。 <a href="https://dreeam00.github.io/XPressPage" target="_blank" style="color: #0078D7; text-decoration: none;">詳細はこちら</a>
-        </div>
-    `;
-    htmlContent += bannerHtml;
-
-    // Append the bottom-left banner to the saved HTML content
-    const bottomLeftBannerHtml = `
-        <a href="https://dreeam00.github.io/XPressPage" target="_blank" style="
-            position: fixed;
-            bottom: 10px;
-            left: 10px;
-            z-index: 9999;
-            display: block;
-        ">
-            <img src="https://dreeam00.github.io/XPressPage/banner.png" alt="XPress Page Banner" style="
-                width: 300px;
-                height: auto;
-                border: none;
-                box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-                border-radius: 5px;
+        const bannerHtml = `
+            <div style="
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                background-color: #f0f0f0;
+                border-top: 1px solid #ccc;
+                padding: 10px;
+                text-align: center;
+                font-family: 'Segoe UI', Arial, sans-serif;
+                font-size: 12px;
+                color: #333;
+                z-index: 9999;
             ">
-        </a>
-    `;
-    htmlContent += bottomLeftBannerHtml;
+                このページはXPress Pageで作成されました。 <a href="https://dreeam00.github.io/XPressPage" target="_blank" style="color: #0078D7; text-decoration: none;">詳細はこちら</a>
+            </div>
+        `;
+        htmlContent += bannerHtml;
 
-    // Prepend the meta charset tag and wrap the content in a full HTML structure
-    const finalHtml = `<!DOCTYPE html>
+        const bottomLeftBannerHtml = `
+            <a href="https://dreeam00.github.io/XPressPage" target="_blank" style="
+                position: fixed;
+                bottom: 10px;
+                left: 10px;
+                z-index: 9999;
+                display: block;
+            ">
+                <img src="https://dreeam00.github.io/XPressPage/banner.png" alt="XPress Page Banner" style="
+                    width: 300px;
+                    height: auto;
+                    border: none;
+                    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+                    border-radius: 5px;
+                ">
+            </a>
+        `;
+        htmlContent += bottomLeftBannerHtml;
+
+        const finalHtml = `<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -1066,12 +1344,16 @@ ${htmlContent}
 </body>
 </html>`;
 
-    const blob = new Blob([finalHtml], { type: 'text/html' });
+        fileToSave = new Blob([finalHtml], { type: 'text/html' });
+        mimeType = 'text/html';
+    }
+
     const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = 'index.html'; // Default filename
+    a.href = URL.createObjectURL(fileToSave);
+    a.download = filename; 
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
-    URL.revokeObjectURL(a.href); // Clean up the URL object
+    URL.revokeObjectURL(a.href); 
+    customAlert(`${filename} が保存されました！`, 'icons/dialog/info.png');
 }

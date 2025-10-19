@@ -23,6 +23,11 @@
             <span>新規作成</span>
             <small>新しい白紙のページを作成します。</small>
         </div>
+        <div class="office-menu-item" id="menu-open">
+            <img src="icon.png" alt="Open">
+            <span>ファイルを開く</span>
+            <small>HTMLファイルを読み込みます。</small>
+        </div>
         <div class="office-menu-item" id="menu-save">
             <img src="save.png" alt="Save">
             <span>名前を付けて保存</span>
@@ -39,9 +44,9 @@
             <div class="ribbon-pane active" id="ribbon-home">
                 <div class="ribbon-group">
                     <span class="group-title">Clipboard</span>
-                    <button><img src="icons/ribon/icon_paste.png" alt="Paste"></button>
-                    <button><img src="icons/ribon/icon_cut.png" alt="Cut"></button>
-                    <button><img src="icons/ribon/icon_copy.png" alt="Copy"></button>
+                    <button id="ribbon-paste"><img src="icons/ribon/icon_paste.png" alt="Paste"></button>
+                    <button id="ribbon-cut"><img src="icons/ribon/icon_cut.png" alt="Cut"></button>
+                    <button id="ribbon-copy"><img src="icons/ribon/icon_copy.png" alt="Copy"></button>
                 </div>
                 <div class="ribbon-group">
                     <span class="group-title">Font</span>
@@ -54,6 +59,10 @@
                     <button id="insert-into">Insert Into</button>
                     <button id="delete-element">Delete</button>
                 </div>
+                <div class="ribbon-group">
+                    <span class="group-title">Component</span>
+                    <button id="save-component">Save Component</button>
+                </div>
             </div>
             <div class="ribbon-pane" id="ribbon-insert">
                 <div class="ribbon-group">
@@ -62,6 +71,7 @@
                     <button id="insert-span">Span</button>
                     <button id="insert-header">Header</button>
                     <button id="insert-hr">HR</button>
+                    <button id="insert-template">Templates</button>
                 </div>
                 <div class="ribbon-group">
                     <span class="group-title">Text</span>
@@ -134,8 +144,6 @@
             <div id="properties-panel"></div>
         </div>
     </div>
-    <script src="js/main.js"></script>
-
     <!-- Custom Element Insertion Dialog -->
     <div id="insert-dialog-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 1000;">
         <div id="insert-dialog" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #EAF2FB; border: 1px solid #95B3D8; border-radius: 5px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); padding: 20px; width: 300px; font-family: 'Segoe UI', Calibri, Arial, sans-serif; font-size: 12px;">
@@ -167,6 +175,22 @@
                 <button id="dialog-cancel-btn" style="background: linear-gradient(to bottom, #EAF2FB, #D9E5F3); border: 1px solid #95B3D8; padding: 5px 10px; border-radius: 3px; cursor: pointer; font-size: 12px; color: #1E4E8A; margin-left: 10px;">Cancel</button>
             </div>
         </div>
+    </div>
+
+    <!-- Template Selection Dialog -->
+    <div id="template-dialog-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 1000;">
+        <dialog id="template-dialog" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #EAF2FB; border: 1px solid #95B3D8; border-radius: 5px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); padding: 20px; width: 600px; max-height: 80%; overflow-y: auto; font-family: 'Segoe UI', Calibri, Arial, sans-serif; font-size: 12px;">
+            <h3 style="margin-top: 0; color: #1E4E8A;">テンプレートを選択</h3>
+            <select id="template-select" style="width: 100%; padding: 8px; margin-bottom: 15px; border: 1px solid #ABC7EC; border-radius: 3px;"></select>
+            <div id="template-list" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px; margin-top: 15px;">
+                <!-- Templates will be dynamically loaded here -->
+            </div>
+            <div style="text-align: right; margin-top: 20px;">
+                <button id="template-save-btn" style="background: linear-gradient(to bottom, #EAF2FB, #D9E5F3); border: 1px solid #95B3D8; padding: 5px 10px; border-radius: 3px; cursor: pointer; font-size: 12px; color: #1E4E8A; margin-left: 10px;">保存</button>
+                <button id="template-delete-btn" style="background: linear-gradient(to bottom, #EAF2FB, #D9E5F3); border: 1px solid #95B3D8; padding: 5px 10px; border-radius: 3px; cursor: pointer; font-size: 12px; color: #1E4E8A; margin-left: 10px;">削除</button>
+                <button id="template-cancel-btn" style="background: linear-gradient(to bottom, #EAF2FB, #D9E5F3); border: 1px solid #95B3D8; padding: 5px 10px; border-radius: 3px; cursor: pointer; font-size: 12px; color: #1E4E8A;">キャンセル</button>
+            </div>
+        </dialog>
     </div>
 
     <!-- Custom Attribute Dialog -->
@@ -229,16 +253,21 @@
                 <button id="clippy-general-hint-button" class="clippy-button" style="flex-grow: 1; margin-left: 5px;">ヒント</button>
             </div>
             <div id="clippy-trivia-display" class="clippy-trivia-display hidden"></div>
-            <div id="clippy-general-hint-display" class="clippy-trivia-display hidden"></div>
+            <div id="clippy-general-hint-display" class="clippy-general-hint-display hidden"></div>
             <div class="speech-bubble-arrow-border"></div>
             <div class="speech-bubble-arrow-fill"></div>
         </div>
     </div>
+
 
     <!-- Status Bar -->
     <div id="status-bar">
         <div id="status-panel-main">準備完了</div>
         <div id="status-panel-right">Design View</div>
     </div>
+
+    <script src="js/templates.js"></script>
+    <script src="js/main.js"></script>
+    <input type="file" id="file-input" accept=".html" style="display: none;">
 </body>
 </html>
